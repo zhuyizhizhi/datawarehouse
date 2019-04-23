@@ -1,1 +1,95 @@
 
+hive函数参考手册  https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF
+
+Hive 优化
+
+核心思想：把Hive SQL 当做Mapreduce程序去优化
+
+常用的设置参数
+set hive.exec.dynamic.partition = true;
+set hive.exec.dynamic.partition.mode = nonstrict;
+set mapreduce.yarn.job.priority=2;
+
+set mapred.job.name =$target.table$now.datekey;
+set hive.exec.parallel=true;
+set hive.auto.convert.join = true;
+##set hive.merge.mapfiles = true;
+##set hive.merge.mapredfiles = true;
+##set hive.merge.smallfiles.avgsize=80000000;
+##set mapreduce.map.java.opts="-Xmx5120m"; 
+##set mapreduce.map.memory.mb=8000;
+
+set mapred.reduce.tasks = 600;
+set mapred.max.split.size=256000000;
+set mapred.min.split.size.per.node=100000000;
+set mapred.min.split.size.per.rack=100000000;
+set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
+set hive.merge.mapfiles = true ;
+set hive.merge.mapredfiles = true;
+##set hive.merge.size.per.task = 256*1000*1000 ;
+set hive.merge.smallfiles.avgsize=64000000 ;
+set mapreduce.map.java.opts="-Xmx5120m"; 
+set mapreduce.map.memory.mb=8000;
+set mapred.reduce.tasks = -1;
+
+
+1MAP/REDUCE参数设置
+    1.1调节MAP个数
+    1.2调节REDUCE个数
+2小文件问题
+3数据倾斜
+      1、Count(distinct)引发数据倾斜问题
+      2、空的数据，或者大量同样的数据，参与关联，或者参与partition by，轻则影响性能，重则内存溢出报错
+      3、不同数据类型id的关联会产生数据倾斜问题
+      4、Mapjoin解决数据倾斜
+      5、自己动手让数据均衡分布解决数据倾斜
+      6、数据倾斜解决问题思路总结
+      4合理使用union all和multi insert
+5order by、sort by、distribute by和cluster by
+      1. order by
+      2. sort by
+      3. distribute by
+      4. cluster by
+      
+1MAP/REDUCE参数设置
+1.1调节MAP个数
+inputFormat这个类是用来处理Map的输入数据的，任务开始时，InputFormat先将HDFS里所有输入文件里的数据分割成逻辑上的InputSpilt对象
+这里的split是HDFS中block的部分或者一整块或几个块中的数据的逻辑分割，一个split对应于一个Map，所以Map的数量是由split的数量决定的。
+那么怎样去确定InputSpilt的个数呢，下面列出于split个数相关的配置参数：
+numSplits：来自job.getNumMapTasks()，即在job启动时用org.apache.hadoop.mapred.JobConf.setNumMapTasks(int n)设置的值，给M-R框架的Map数量的提示。
+minSplitSize：默认为1B，可由子类复写函数protected void setMinSplitSize(long minSplitSize) 重新设置。一般情况下，都为1，特殊情况除外。
+blockSize：HDFS的块大小，默认为64M，一般大的HDFS都设置成128M。
+splitSize=max{minSize,min{maxSize,blockSize}}
+其中minSize=max{minSplitSize,mapred.min.split.size}，maxSize=mapred.max.split.size
+1.    通常情况下，作业会通过input的目录产生一个或者多个map任务。 
+主要的决定因素有：input的文件总个数，input的文件大小，集群设置的文件块大小(目前为128M, 可在hive中通过set dfs.block.size;命令查看到，该参数不能自定义修改)；
+ 
+2.    举例： 
+a)    假设input目录下有1个文件a,大小为780M,那么hadoop会将该文件a分隔成7个块（6个128m的块和1个12m的块），从而产生7个map数
+b)    假设input目录下有3个文件a,b,c,大小分别为10m，20m，130m，那么hadoop会分隔成4个块（10m,20m,128m,2m）,从而产生4个map数
+即，如果文件大于块大小(128m),那么会拆分，如果小于块大小，则把该文件当成一个块。
+ 
+3.    是不是map数越多越好？ 
+       答案是否定的。如果一个任务有很多小文件（远远小于块大小128m）,则每个小文件也会被当做一个块，用一个map任务来完成，而一个map任务启动和初始化的时间远远大于逻辑处理的时间，就会造成很大的资源浪费。而且，同时可执行的map数是受限的。
+ 
+4.    是不是保证每个map处理接近128m的文件块，就高枕无忧了？ 
+       答案也是不一定。比如有一个127m的文件，正常会用一个map去完成，但这个文件只有一个或者两个小字段，却有几千万的记录，如果map处理的逻辑比较复杂，用一个map任务去做，肯定也比较耗时。
+针对上面的问题3和4，我们需要采取两种方式来解决：即减少map数和增加map数；
+1、减少MAP数
+— 如果是小文件造成的map数太大，可以参考合并小文件的办法：
+-- 每个Map最大输入大小，决定合并后的文件数
+set mapred.max.split.size=256000000;
+-- 一个节点上split的至少的大小 ，决定了多个data node上的文件是否需要合并
+set mapred.min.split.size.per.node=100000000;
+-- 一个交换机下split的至少的大小，决定了多个交换机上的文件是否需要合并
+set mapred.min.split.size.per.rack=100000000;
+-- 执行Map前进行小文件合并
+set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat; 
+— 如果没有小文件，最简单方法是通过设置mapred.max.split.size来调小map数，将其设置大一点（mapred.max.split.size：每个map的最大输入大小，该值越小，map数越多）
+2、增加MAP数
+1）如果表a只有一个文件，大小为120M，但包含几千万的记录，如果用1个map去完成这个任务，肯定是比较耗时的，这种情况下，我们要考虑将这一个文件合理的拆分成多个，这样就可以用多个map任务去完成。
+                   set mapred.reduce.tasks=10;--调节REDUCE个数
+                   create table a_1 as  select * from a distribute by rand(123);
+    这样会将a表的记录，随机的分散到包含10个文件的a_1表中，再用a_1代替上面sql中的a表，则会用10个map任务去完成。
+    每个map任务处理大于12M（几百万记录）的数据，效率肯定会好很多
+2）通过设置mapred.max.split.size来调大map数，也可配合mapred.min.split.size一起来调节，将其设置小一点
