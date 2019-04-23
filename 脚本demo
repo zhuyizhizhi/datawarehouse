@@ -1,7 +1,0 @@
-sh 
-/opt1/shell/dataxScheduling.sh 
-'lessonbuy' 
-'ods_mango_lessonbuy_all_d' 
-'"column":[{"name":"_id","type":"string"}, {"name":"prt","type": "string" }, { 	"name": "uts", 	"type": "Date" }, { 	"name": "cts", 	"type": "Date" }, { 	"name": "nick", 	"type": "string" }, { 	"name": "gender", 	"type": "string" }, { 	"name": "bd", 	"type": "Date" }]' 
-'"column": [{ 	"name": "_id", 	"type": "string" }, { 	"name": "prt", 	"type": "string" }, { 	"name": "uts", 	"type": "string" }, { 	"name": "cts", 	"type": "string" }, { 	"name": "nick", 	"type": "string" }, { 	"name": "gender", 	"type": "string" }, { 	"name": "bd", 	"type": "string" }]' 
-'id string,prt string,uts string,cts string,nick string,gender string,bd string'
