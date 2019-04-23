@@ -22,3 +22,6 @@
 10.数据仓库存储成本生命周期管理
 
 11.数据应用
+
+
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg" alt="996.icu" /></a>
