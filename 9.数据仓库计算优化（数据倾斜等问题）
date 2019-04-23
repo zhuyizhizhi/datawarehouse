@@ -139,3 +139,38 @@ hive.input.format=……表示合并小文件。大于文件块大小128m的，�
  
 单一reduce的记录数与平均记录数差异过大，通常可能达到3倍甚至更多。 最长时长远大于平均时长
 
+1、Count(distinct)引发数据倾斜问题
+-原因是会按group by字段分布数据，如果group by后面的值很少，比如只有男女，那就只有两台机器执行，distinct后面的字段会排序；
+-解决方案1：设置参数：set hive.groupby.skewindata=true; 有数据倾斜的时候进行负载均衡，当选项设定为 true，生成的查询计划会有两个MR Job（第一个MR Job Map的输出结果随机分配到reduce做次预汇总,减少某些key值条数过多某些key条数过小造成的数据倾斜问题）。第一个 MR Job 中，Map 的输出结果集合会随机分布到 Reduce 中，每个 Reduce 做部分聚合操作，并输出结果，这样处理的结果是相同的 Group By Key 有可能被分发到不同的 Reduce 中，从而达到负载均衡的目的；第二个 MR Job 再根据预处理的数据结果按照 Group By Key 分布到 Reduce 中（这个过程可以保证相同的 Group By Key 被分布到同一个 Reduce 中），最后完成最终的聚合操作。
+
+-解决方案2：先group by把数据减少，在基础上再进行group by数据量就少点。
+
+2、空的数据，或者大量同样的数据，参与关联，或者参与partition by，轻则影响性能，重则内存溢出报错
+—有些特定场景，比如未登陆用户的user_id访问情况可能会填一个空或者0的值；
+-这些数据参与关联或者partition by会都分配到一台机器上做处理，导致出现问题。
+-解决方法1：参数解决，skewjoin
+-解决方法2：过滤掉这些不用的数据再关联
+-解决方法3：手动让其重新分布on(case when a.user_id is null then concat(‘xxx’,rand()) else a.user_id end)=b.user_id;
+
+3、不同数据类型id的关联会产生数据倾斜问题
+-一定要确保两个关联的字段是相同类型
+-比如string和bigint关联，string会被转成bigint，有些转不了的全部放到一台机器上了，所以出现问题。为什么hive不是往string转，原因：BUG。
+解决方法：全部转成string再关联
+-其他不同类型的关联也可能出现这种情况。
+
+4、Mapjoin解决数据倾斜
+小表关联时，MAPJION会把小表全部读入内存中，在map阶段直接拿另外一个表的数据和内存中表数据做匹配，这样就不会由于数据倾斜导致某个reduce上落数据太多而失败。由于在map是进行了join操作，省去了reduce运行的效率也会高很多
+在适合使用mapjoin的场景，可以在select后使用 /*+ mapjoin(a)*/的方式，或者设置自动开启mapjoin模式参数，set hive.auto.convert.join=true;
+select /*+ mapjoin(A)*/ f.a,f.b from A t join B f  on ( f.a=t.a and f.ftime=20110802) 
+mapjoin一般要求小表小于100M，如果小表过大，超过mapjoin适合的场景。比如member表100万条记录，日志log表上亿条记录，就不能简单的使用mapjoin了。但通过了解到业务场景，每天活跃的用户数memberid比较少，  则可以先对log表的member_id去重后，使用mapjoin关联member表，然后再和log表通过mapjoin关联。
+
+5、自己动手让数据均衡分布解决数据倾斜
+   A表与B表关联，没有复杂逻辑，只是通过id去关联。A表每天10多亿条记录，B表约三四亿记录，两表直接关联出现数据倾斜，执行一天数据近2个小时。
+   对表进行数据均衡处理，分别增加一个字段r，A表的r是0-99随机分布，B关联0-99的数组，使其数据翻100倍，在关联时用上r字段，使A表数据被打散。
+6、数据倾斜解决问题思路总结
+-分层次逐步减少数据量；
+-过滤掉倾斜的数据；
+不能过滤就想办法让其均衡分布；
+-不能均衡分布就想办法让倾斜的数据做mapjoin;
+-如果还不能解决就试一下倾斜参数设置。
+hive.groupby.skewindata=true：数据倾斜时负载均衡，当选项设定为true，生成的查询计划会有两个MRJob。第一个MRJob 中，Map的输出结果集合会随机分布到Reduce中，每个Reduce做部分聚合操作，并输出结果，这样处理的结果是相同的GroupBy Key有可能被分发到不同的Reduce中，从而达到负载均衡的目的；第二个MRJob再根据预处理的数据结果按照GroupBy Key分布到Reduce中（这个过程可以保证相同的GroupBy Key被分布到同一个Reduce中），最后完成最终的聚合操作。
