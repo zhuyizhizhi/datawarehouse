@@ -1,0 +1,8 @@
+查看hdsf目录文件大小hdfs dfs -du -h /data/hive/warehouse/ods.db
+
+删除hdsf目录数据 谨慎使用 hdfs dfs -rm -r   /data/hive/warehouse/ods.db/ods_hive_xxx
+
+查看yarn提交应用情况 yarn application -status xxxx
+ 
+ 
+ 
