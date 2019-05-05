@@ -62,4 +62,16 @@ pom.xml添加
     scp /Users/zhuyizhi/downloads/udf_test.jar root@地址:~/
     
     hdfs dfs -put ./udf_test.jar /opt/udf/ 上传到hdfs
-    
+
+add jar hdfs://jlgl/opt/udf/udf_test.jar;
+add jar /usr/local/usrJars/dulm/hiveUDF-0.0.1-SNAPSHOT-all.jar; 
+create temporary function my_uppercase as 'com.neu.hive.UDF.ToUpperCaseUDF';
+创建临时的方法叫做my_uppercase   as  你的包名+类名。
+select my_uppercase(datasource) from tenmindata limit 10;
+测试使用： 选出字段datasource下的数据并全部转为大写，显示前10条。
+
+
+线上服务要在每个库上面创建一下永久函数。
+
+创建永久函数
+CREATE FUNCTION dws.bss_city_code AS 'com.ysten.bigdata.hive.udf.GetCityBYBssCity';
