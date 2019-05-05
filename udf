@@ -1,4 +1,6 @@
- <dependencies>
+pom.xml添加
+
+<dependencies>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
@@ -55,3 +57,9 @@
             </plugin>
         </plugins>
     </build>
+    
+    本地jar包上传到服务器
+    scp /Users/zhuyizhi/downloads/udf_test.jar root@地址:~/
+    
+    hdfs dfs -put ./udf_test.jar /opt/udf/ 上传到hdfs
+    
