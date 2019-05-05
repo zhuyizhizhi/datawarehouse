@@ -74,4 +74,4 @@ select my_uppercase(datasource) from tenmindata limit 10;
 线上服务要在每个库上面创建一下永久函数。
 
 创建永久函数
-CREATE FUNCTION dws.bss_city_code AS 'com.ysten.bigdata.hive.udf.GetCityBYBssCity';
+CREATE FUNCTION dws.bss_city_code AS 'com.ysten.bigdata.hive.udf.GetCityBYBssCity' USING JAR 'hdfs://service/add.jar';
