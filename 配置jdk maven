@@ -1,0 +1,16 @@
+ mac下jdk maven配置
+ maven下载 http://maven.apache.org/download.cgi
+ jdk官网下载
+ 打开 创建 touch/open -e .bash_profile
+ 重新设置 source .bash_profile
+ 查看 jdk 位置  /usr/libexec/java_home -V
+
+
+MAVEN_HOME=/Users/zhuyizhi/Downloads/apache-maven-3.6.1
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home
+PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH:.
+CLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:.
+export MAVEN_HOME
+export JAVA_HOME
+export PATH
+export CLASSPATH
