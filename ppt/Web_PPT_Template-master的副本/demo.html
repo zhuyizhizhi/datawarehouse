@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="zhuyizhi">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>示例</title>
+	<link rel="stylesheet" href="css/reveal.css">
+	<!-- 主题样式 -->
+	<link rel="stylesheet" href="css/theme/blood.css">
+	<!-- 语法高亮样式 -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	
+</head>
+<body>
+	<div class="reveal"> 
+       <div class="slides"> 
+        <section>
+        <h1>数据仓库介绍</h1>
+        <p><small>
+        	Created by <a href="">yasaka</a> 
+        	github : <a href="https://github.com/zhuyizhizhi/datawarehouse">zhuyizhi</a>
+        </small></p>
+        </section> 
+        <section data-background="img/hunluan.jpg" data-background-size="800px" id="hunluan">
+             <p><small>	无序的数据世界</small></p>
+			</section>
+			
+			<section data-background="img/shunxu.gif" data-background-size="1200px">
+             <p><small>	有序的数据世界</small></p>
+			</section>
+        <section>
+                  <h2>什么是数据仓库?</h2>
+					<p class="fragment">
+						why? dt互联时代,数据暴涨,将数据有序、有结构分类组织存储，达到性能、成本、效率、质量之间取得平衡</p>
+						<hr class="fragment">
+						<p class="fragment">性能:减少数据的i/o吞吐</p>
+						<p class="fragment">成本:降低大数据存储和计算成本</p>
+					  <p class="fragment">效率:提高数据使用效率</p>
+					  <p class="fragment">质量:提高数据统一计算口径、减少错误</p>
+
+        </section> 
+     	
+		<section>
+		<!-- 垂直滚动，在section中再嵌套section -->
+			
+    
+     <h2>维度建模</h2>
+     <p class="fragment">从分析决策的需求出发构建模型,服务于需求</p>
+     <p class="fragment">重点关注如何快速完成需求分析,同时具有较好的大规模查询响应性能</p>
+      <p class="fragment">典型的代表是星型模型</p>
+       <p class="fragment">其架构设计主要步骤</p>
+       </section>
+       <section>
+       	<h2>星型模型</h2>
+						<p>主要步骤:</p>
+						<p class="fragment fade-up">(1)选择需要进行分析决策的业务过程.可以是单个业务事件,比如交易的支付、退款等.也可以是一系列相关业务流程,比如展示->预约->下单->观看.</p>
+						<p class="fragment fade-up">(2)选择粒度.在事件分析中，预判所有分析需要细分的程度,从而决定选择的粒度.粒度是维度的一个组合</p>
+						<p class="fragment fade-up">(3)识别维表.选择好粒度以后,需要基于此粒度设计维表,包括维度属性,用于分析时进行分组筛选.</p>
+						<p class="fragment fade-up">(4)选择事实.确定分析所需要衡量的指标.</p>
+							<!-- <p class="fragment shrink">shrink</p>
+						<p class="fragment fade-out">fade-out</p>
+						<p class="fragment fade-up">fade-up (also down, left and right!)</p>
+						<p class="fragment current-visible">current-visible</p>
+						<p>Highlight <span class="fragment highlight-red">red</span> <span class="fragment highlight-blue">blue</span> <span class="fragment highlight-green">green</span></p>
+			-->
+       </section>
+       </section>
+       
+        <section data-background="img/xingxing.jpg" data-background-size="1100px" id="xingxing">
+             <p><small>	星型模型</small></p>
+			</section>
+			
+				<section >
+				 <h2>数仓生产流程</h2>
+				     <p>数据生产工作流</p>
+				     	<p class="fragment fade-up">(1)数据调研</p>
+				     	 <p class="fragment fade-up">(2)数据域划分</p>
+				     	<p class="fragment fade-up">(3)明确业务所属数据域和维度、明确指标</p>
+				     	<p class="fragment fade-up">(4)数据模型设计</p>		
+				     		<p class="fragment fade-up">(5)代码开发</p>	
+				     	<p class="fragment fade-up">(6)部署调度</p>	
+			</section>
+			  <section data-background="img/shujujiagou.jpg" data-background-size="610px" id="shujugonguzoliu">
+             <p><small>	</small></p>
+			</section>
+  <section>
+       <h2>数据需求</h2>
+      
+       <p class="fragment fade-up">前方高能</p>
+     </section>
+     	  <section data-background="img/tixuqiu.jpg" data-background-size="1000px" id="tixuqiu">
+             <p><small>	</small></p>
+			</section>
+		
+
+<section>
+					<h2>重要说明</h2>
+					<p>
+						鲁迅曾经说过:
+					</p>
+					<blockquote cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
+						&ldquo;所有需求按照下面填写，尤其是项目来源表和项目指标说明一定要填写清楚，如果不提供或者不清晰描述，数仓将不列入需求排期.&rdquo;
+					</blockquote>
+</section>
+
+<section>
+	<h2>需求格式内容</h2>
+	 <p>一、项目背景</p>
+	  <blockquote> eg:需求背景:本次需求需要三个月s历史数据，进行机器学习模型训练，为了...优先级:A  </blockquote>
+</section>
+
+<section>
+	<h2>需求格式内容</h2>
+	 <p>二、项目来源表</p>
+	  <small>
+	    <table>
+	    	<thead>
+							<tr>
+								<th>来源数据库</th>
+								<th>来源表名</th>
+								<th>表说明</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>mangodb</td>
+								<td>xxorder</td>
+								<td>每日订单数据</td>
+							</tr>
+								<tr>
+								<td>mysql</td>
+								<td>xxuser</td>
+								<td>用户信息表</td>
+							</tr>
+						</tbody>
+	    </table>	
+	  </small>
+</section>
+
+
+<section>
+	<h2>需求格式内容</h2>
+	 <p>三、项目指标说明</p>
+	  <small>
+	    <table>
+	    	<thead>
+							<tr>
+								<th>来源表</th>
+								<th>来源表字段</th>
+								<th>维度</th>
+								<th>指标</th>
+								<th>指标口径说明</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>xxorder</td>
+								<td>price</td>
+								<td>按天计算</td>
+								<td>订单总金额</td>
+									<td>按天获取订单总金额，每天订单金额数据相加，除开小程序下单</td>
+								</tr>
+								<tr>
+								<td>xxuser</td>
+								<td>userid</td>
+								<td>按天计算</td>
+								<td>访问uv</td>
+									<td>按天计算app端访问uv,userid按天去重累加计算</td>
+								</tr>
+						</tbody>
+	    </table>	
+	  </small>
+</section>
+
+<section>
+	<h2>需求格式内容</h2>
+	 <p>四、项目时间要求</p>
+	  <blockquote> 项目需求最晚需要在几月几号完成，给出年月日例如 2019-04-30 20:00  </blockquote>
+</section>
+
+<section>
+	<h1>END</h1>
+	<h1>感谢聆听</h1>
+	<p>需求格式<strong><a href="https://www.feishu.cn/space/doc/doccnEEPAb6MoN6QM9B5O2#">文档</a></strong></p>
+	<p>更多详情可以查看飞书<a href="https://www.feishu.cn/space/folder/N99JeboXkPleyT64">数据仓库公共文档</a></p>
+</section>
+       </section>
+
+       </div> 
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+<script> 
+Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				transition: 'zoom',   // 定义全局滑动效果None Fade Slide Convex Concave Zoom 只有在有背景时才会显示
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', async: true, condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/markdown/markdown.js', async: true, condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/notes/notes.js' }
+				]
+			});
+   
+   
+</script>
+</body>
+</html>
