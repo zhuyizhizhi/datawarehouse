@@ -1,0 +1,43 @@
+https://blog.csdn.net/seafishyls/article/details/44546809
+
+想着如何在Mac OS下部署静态网页（纯粹的html,css,js），用惯了windows下的iis，可惜Mac OS下也许只能通过Tomcat或者Apache之类的作为部署容器。听说Mac OS下自带了apache，于是就折腾起来。 
+环境：macbook air os x 10.9.5
+
+找到apache藏身之所
+系统默认是隐藏apache安装目录的，但我们可以通过“命令行”或者“文件夹前往”的方式找到它。它是安装在系统的私有目录下，也就是/private/etc下面，因为它是隐藏的，所以我们无法通过界面找到它。 
+ps：/ect目录是mac os 系统存放系统配置信息的地方，里面都是xxx.conf的配置文件。 
+命令行 
+在终端输入 open /etc 命令即可打开它的“住所”了。请看： 
+ 
+文件夹前往 
+打开Finder > 前往 ＞前往文件夹。请看： 
+
+
+apache下部署web资源
+跟windows不一样，它的部署包不是放在htdocs(windows下的存放目录),而是放在 “/资源库/WebServer/Documents/”下面： 
+ 
+那么我们的静态资源就可以丢到这个目录下去了。 
+这个目录是apache的默认目录，有时候为了方便操作，可能需要指向特定的文件夹，该如何修改apache的配置呢？
+
+修改默认部署路径
+找到下面httpd.conf文件，配置转发，模块启动停用之类操作都在该文件里面。 
+ 
+找到这个DocumentRoot，修改成你想要的地址即可 
+
+
+启动停用apache
+启用apache的命令： sudo apachectl start/restart 
+如果需要password，输入即可，如果启动失败了，就可以去看apache的日志，找到错误的原因（前提是在httpd.conf中配置了日志的路径） 
+ 
+在浏览器中输入localhost或者127.0.0.1即可看到“It works!”的提示。恭喜，apache启动成功了。停止apache的命令是：sudo apachectl stop
+
+修改apache默认端口
+通过localhost或者127.0.0.1访问，表示默认的端口是80，有时候如果80端口被占用了，就得换个端口试试了。同样是在httpd.conf下面，找到Listen 80 那一行，修改成你想要的端口即可。 
+ 
+ 
+其实，apache的用法还有非常多，比如 转发配置、ssl配置、日志配置等，后面慢慢补充，以备不时之需。
+--------------------- 
+作者：Ls余 
+来源：CSDN 
+原文：https://blog.csdn.net/seafishyls/article/details/44546809 
+版权声明：本文为博主原创文章，转载请附上博文链接！
